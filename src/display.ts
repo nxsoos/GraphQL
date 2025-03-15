@@ -1,4 +1,4 @@
-import { UserData, UserInfo } from './userdata';
+import { UserData } from './userdata';
 import { createLogoutButton } from './logout';
 
 function displayUserInfo(userData: UserData): void {
@@ -85,11 +85,11 @@ function displayUserInfo(userData: UserData): void {
 `;
 
     profileContainer.appendChild(profileLeft);   
-    displaySkillsGraph(userInfo.attrs, projects, userData.skills);
+    displaySkillsGraph( userData.skills);
     displayAuditRatioGraph(userInfo.auditRatio, userInfo.totalUp, userInfo.totalDown);
 
 }
-function displaySkillsGraph(attrs: Record<string, any>, projects: UserData['projects'], skills: UserData['skills']): void {
+function displaySkillsGraph( skills: UserData['skills']): void {
     const skillMap: Record<string, number> = {};
     
     skills.forEach(skill => {

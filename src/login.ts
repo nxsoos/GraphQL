@@ -1,9 +1,6 @@
 import { fetchUserData } from "./userdata";
 import { displayUserInfo } from "./display";
 
-interface AuthResponse {
-    jwt: string;
-}
 
 function createLoginUI(): void {
     const appDiv = document.getElementById('app')!;
