@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "./build.sh",
+    "build": "npx tsc && npx vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
