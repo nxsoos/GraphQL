@@ -42,6 +42,10 @@ body::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(45deg, #2bfff5, #ff6b2b);
 }
 
+.error-message{
+    color: #ffffff;
+}
+
 
 .login-container {
 position: relative;
@@ -411,18 +415,15 @@ color: rgba(255,255,255,0.5);
 
 
 /* */
-.projects-section {
-    width: 100%;
-    max-width: 800px;
-    overflow-y: hidden;
-}
 
 .chart-box {
     background: rgba(255,255,255,0.05);
     z-index: -1 ;
     border-radius: 19px;
     padding: 20px;
-    height: 50vh;
+    min-height: 350px;
+    max-height: 600px;
+    height: 450px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -443,6 +444,7 @@ color: rgba(255,255,255,0.5);
 }
 
 #skillsGraph {
+    
     width: 100%;
     height: 100%;
     margin-top: -20px;
@@ -468,7 +470,6 @@ color: rgba(255,255,255,0.5);
     stroke-width: 2;
 }
 
-
 .xp-progression {
     position: relative;
     background: rgba(255,255,255,0.05);
@@ -476,10 +477,15 @@ color: rgba(255,255,255,0.5);
     border-radius: 19px;
     overflow: hidden;
     padding: 20px;
-    height: 50vh;
-    width: 100vh;
+    min-height: 350px;
+    width: 100%;
+    height: 450px; 
+    max-height: 600px;                              
     margin: 30px auto;
     max-width: 800px;
+}
+.xp-progression svg {
+    margin-left: 20px;
 }
 
 .xp-progression h3 {
@@ -560,7 +566,7 @@ svg text.skill-label {
 
 /* audit ratio graph */
 .audit-ratio-graph {
-    
+    transform: scale(1.1);
     width: 400px;
     height: 400px;
     margin-top: -40px;
@@ -612,12 +618,17 @@ svg text.skill-label {
 .projects-section {
 
     background: rgba(255,255,255,0.05);
-    z-index: -1 ;
+    z-index: 1;
     border-radius: 19px;
     padding: 20px;
     width: 800px;
-    height: 50vh;
+    min-height: 350px;
+    height: 450px; 
+    max-height: 600px;
     margin:  auto;
+    width: 100%;
+    max-width: 800px;
+    overflow-y: hidden;
 }
 .projects-section h3 {
     color: #45f3ff;
@@ -753,13 +764,15 @@ svg text.skill-label {
     #skillsGraph {
         width: min(100%, 380px);
         height: min(100%, 380px);
+        
     }
 
 
 
-    #skillsGraph svg, #auditRatio svg, .xp-progression svg {
+    #skillsGraph svg, .xp-progression svg {
         transform-origin: center;
-        transform: scale(0.9);
+        transform: scale(0.8);
+        margin-left: 10px;
     }
 
     .xp-progression svg {
@@ -788,8 +801,8 @@ svg text.skill-label {
 
     .xp-progression svg {
         transform-origin: center;
-        transform: scale(0.9);
-        transform: translateX(-12px);
+        transform: scale(0.8);
+        margin-left: -30px;
     }
     #skillsGraph {
         width: min(100%, 300px);
@@ -838,8 +851,8 @@ svg text.skill-label {
     }
 
     .projects-header-fixed .projects-columns .header-item:nth-child(3) {
-        padding-left: 25px;  /* Increase padding for better alignment */
-        text-align: center;  /* Center the text */
+        padding-left: 25px;  
+        text-align: center;  
         margin-left: -40px;
     }
     
