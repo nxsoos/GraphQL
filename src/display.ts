@@ -85,7 +85,7 @@ function displayUserInfo(userData: UserData): void {
 `;
 
     profileContainer.appendChild(profileLeft);   
-    displaySkillsGraph( userData.skills);
+    displaySkillsGraph(userData.skills);
     displayAuditRatioGraph(userInfo.auditRatio, userInfo.totalUp, userInfo.totalDown);
 
 }
@@ -239,10 +239,26 @@ function displayXPProgressionChart(projects: Array<{
     amount: number;
     createdAt: string;
 }>): void {
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("width", "800");
-    svg.setAttribute("height", "340");
+    const container = document.querySelector('.profile-right .xp-progression');
+    if (!container) return;
     
+    // Set minimum dimensions to ensure the chart doesn't get too small
+    const minWidth = 600;
+    const minHeight = 300;
+    
+    // Get the container width but ensure it's not smaller than our minimum
+    const containerWidth = Math.max(container.clientWidth || 800, minWidth);
+    // Set a reasonable height that's proportional but not too small
+    const containerHeight = Math.max(Math.min(containerWidth * 0.5, 340), minHeight);
+    
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "100%"); // Use percentage for width
+    svg.setAttribute("height", containerHeight.toString());
+    svg.setAttribute("viewBox", `0 0 800 340`); // Keep viewBox consistent
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+    
+    // Add a class for additional styling if needed
+    svg.classList.add('xp-chart');
 
     const padding = 50;  
     const width = 800 - (padding * 2);
@@ -260,10 +276,11 @@ function displayXPProgressionChart(projects: Array<{
 
     const xScale = width / (dataPoints.length - 1);
     const yScale = height / cumulativeXP;
-      // Y-axis markers with adjusted positioning
+    
+    // Y-axis markers with adjusted positioning
     const yMarkers = 5;
     for (let i = 0; i <= yMarkers; i++) {
-          const y = padding + height - ((cumulativeXP * i / yMarkers) * yScale);
+        const y = padding + height - ((cumulativeXP * i / yMarkers) * yScale);
         const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         gridLine.setAttribute("x1", padding.toString());
         gridLine.setAttribute("x2", (800 - padding).toString());
@@ -273,8 +290,8 @@ function displayXPProgressionChart(projects: Array<{
         gridLine.setAttribute("stroke-width", "1");
         svg.appendChild(gridLine);
 
-          // Convert XP to KB and display
-          const kbValue = ((cumulativeXP * i / yMarkers) / 1000).toFixed(1);
+        // Convert XP to KB and display
+        const kbValue = ((cumulativeXP * i / yMarkers) / 1000).toFixed(1);
     
         const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
         text.textContent = `${kbValue}KB`;
@@ -287,10 +304,10 @@ function displayXPProgressionChart(projects: Array<{
         svg.appendChild(text);
     }
 
-      // Add vertical grid lines
+    // Add vertical grid lines
     const xMarkers = dataPoints.length - 1;
     for (let i = 0; i <= xMarkers; i++) {
-          const x = padding + (i * xScale);
+        const x = padding + (i * xScale);
         const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
         gridLine.setAttribute("x1", x.toString());
         gridLine.setAttribute("x2", x.toString());
@@ -300,6 +317,7 @@ function displayXPProgressionChart(projects: Array<{
         gridLine.setAttribute("stroke-width", "1");
         svg.appendChild(gridLine);
     }
+    
     // Data points with adjusted positioning
     dataPoints.forEach((point, index) => {
         const x = padding + (index * xScale);
@@ -313,7 +331,9 @@ function displayXPProgressionChart(projects: Array<{
         circle.setAttribute("fill", "#45f3ff");
 
         // Date label (every 3rd point to avoid crowding)
-        if (index % 3 === 0) {
+        // Adjust the frequency of labels based on data point count
+        const labelFrequency = dataPoints.length > 15 ? 4 : 3;
+        if (index % labelFrequency === 0) {
             const dateText = document.createElementNS("http://www.w3.org/2000/svg", "text");
             dateText.textContent = point.date.toLocaleDateString();
             dateText.setAttribute("x", x.toString());
@@ -366,13 +386,40 @@ function displayXPProgressionChart(projects: Array<{
     yAxis.setAttribute("stroke-width", "2");
     svg.appendChild(yAxis);
 
-    const container = document.createElement('div');
-    container.className = 'xp-progression';
-    container.innerHTML = '<h3>XP Progression</h3>';
+    // Clear any existing content and append the new SVG
+    while (container.firstChild) {
+        if (container.firstChild.nodeName !== 'H3') {
+            container.removeChild(container.firstChild);
+        } else {
+            break;
+        }
+    }
+    
     container.appendChild(svg);
+    
+    // Also update the container's CSS to ensure it has sufficient height
+    if (container instanceof HTMLElement) {
+        container.style.minHeight = `${containerHeight + 60}px`; // Add extra for the heading
+    }
+    
+    // Add resize event listener to update chart on window resize
+    window.addEventListener('resize', () => {
+        const updatedContainer = document.querySelector('.profile-right .xp-progression');
+        if (updatedContainer && updatedContainer.contains(svg)) {
+            const newWidth = Math.max(updatedContainer.clientWidth || 800, minWidth);
+            const newHeight = Math.max(Math.min(newWidth * 0.5, 340), minHeight);
+            svg.setAttribute("height", newHeight.toString());
+            
+            if (updatedContainer instanceof HTMLElement) {
+                updatedContainer.style.minHeight = `${newHeight + 60}px`;
+            }
+        }
+    });
+}
 
-    document.querySelector('.profile-right .xp-progression')?.appendChild(svg);
-}function displayUserImage(attrs: Record<string, any>): void {
+
+
+function displayUserImage(attrs: Record<string, any>): void {
     const fileId = attrs['pro-picUploadId'];
     const token = localStorage.getItem('token');
     
