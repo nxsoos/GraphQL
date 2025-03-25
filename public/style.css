@@ -777,7 +777,6 @@ svg text.skill-label {
 }
 
 @media screen and (max-width: 480px) {
-
     .user-info-content {
         grid-template-columns: 1fr;
     }
@@ -792,14 +791,15 @@ svg text.skill-label {
 
     .profile-logout {
         padding: 8px 16px; 
-        right: 40px;
+        right: 70px;
         top: 130px;
     }
 
     #skillsGraph {
         margin-left: -45px;
-    
+        scale: 0.9;
     }
+    
     #auditRatio svg {
         margin-left: -55px;
     }
@@ -807,35 +807,25 @@ svg text.skill-label {
     .projects-header-fixed, .header-item{
         font-size: small;
     }
-    
-    #auditRatio, #skillsGraph {
-        transform: scale(0.8);
-    }
+
     .projects-header-fixed .projects-columns .header-item:nth-child(3) {
         padding-left: 25px;  
         text-align: center;  
         margin-left: -40px;
     }
     
-    /* Add this at the bottom of your CSS file */
-@media screen and (max-width: 480px) {
-    /* Adjust colors for mobile devices */
-    
-    /* Adjust the main background color */
     body {
-        background: #1e1e24; /* Slightly darker background for mobile */
+        background: #2a2a32;
     }
     
-    /* Adjust the container background */
     .profile-up::after, .chart-box::after, .xp-progression::after, .projects-section::after {
-        background: #252530; /* Slightly adjusted container background */
+        background: #32323e;
     }
     
-    /* Adjust gradient colors */
     .profile-up::before {
         background: repeating-conic-gradient(
             from var(--a),
-            #ff3980 0%, /* Brighter pink */
+            #ff3980 0%,
             #ff3980 5%,
             transparent 5%,
             transparent 40%,
@@ -849,11 +839,11 @@ svg text.skill-label {
     .chart-box::before {
         background: repeating-conic-gradient(
             from var(--a),
-            #a55aee 0%,    /* Brighter purple */
+            #a55aee 0%,
             #a55aee 5%,
             transparent 5%,
             transparent 40%,
-            #00ffab 50%,   /* Brighter mint */
+            #00ffab 50%,
             transparent 50%,
             transparent 90%,
             #a55aee 100%
@@ -863,73 +853,186 @@ svg text.skill-label {
     .xp-progression::before, .projects-section::before {
         background: repeating-conic-gradient(
             from var(--a),
-            #ff7c3f 0%,    /* Brighter orange */
+            #ff7c3f 0%,
             #ff7c3f 5%,
             transparent 5%,
             transparent 40%,
-            #2bfff5 50%,   /* Same turquoise */
+            #2bfff5 50%,
             transparent 50%,
             transparent 90%,
             #ff7c3f 100%
         );
     }
     
-    /* Adjust text colors */
     .user-info-section h3, .chart-box h3, .xp-progression h3, .projects-section h3 {
-        color: #5affff; /* Brighter cyan for headings */
+        color: #5affff;
     }
     
-    /* Adjust skill graph colors */
     #skillsGraph polygon {
-        fill: rgba(69, 243, 255, 0.4); /* More opacity */
-        stroke: #5affff; /* Brighter stroke */
+        fill: rgba(69, 243, 255, 0.4);
+        stroke: #5affff;
     }
     
     .skill-point {
-        fill: #ff3980; /* Brighter pink */
-        stroke: #5affff; /* Brighter cyan */
+        fill: #ff3980;
+        stroke: #5affff;
     }
     
-    /* Adjust audit ratio colors */
     .up-circle {
-        stroke: #5affff; /* Brighter cyan */
+        stroke: #5affff;
     }
     
     .down-circle {
-        stroke: #ff5a5a; /* Brighter red */
+        stroke: #ff5a5a;
     }
     
     .ratio-text {
-        fill: #ff3980; /* Brighter pink */
+        fill: #ff3980;
     }
     
-    /* Adjust project list colors */
     .project-name {
-        color: #5affff; /* Brighter cyan */
+        color: #5affff;
     }
     
     .project-xp {
-        color: #ff3980; /* Brighter pink */
+        color: #ff3980;
     }
 }
 
-}
-/* Add touch-friendly styles */
-@media (hover: none) and (pointer: coarse) {
-    /* Increase spacing for touch targets */
-    .project-item, .user-info-content p, button {
+@media screen and (max-width: 480px) {
+    .user-info-content {
+        grid-template-columns: 1fr;
+    }
+
+    .project-item {
+        font-size: 14px;
+    }
+    .user-info-section h3 {
+        text-align: left;
+        font-size: large;
+    }
+
+    .profile-logout {
+        padding: 8px 16px; 
+        right: 70px;
+        top: 130px;
+    }
+
+    #skillsGraph {
+        margin-left: -45px;
+        scale: 0.9;
+    }
+    
+    #auditRatio svg {
+        margin-left: -55px;
+    }
+    .xp-progression {
+        height: auto;
+        
         padding: 15px;
-        margin: 8px 0;
+        overflow: hidden;
     }
     
-    /* Add active state for touch feedback */
-    .project-item:active {
-        background: rgba(255, 255, 255, 0.15);
+    .xp-progression svg {
+        transform: scale(1.05);
+        margin-left: 0;
+        width: 100%;
+        height: auto;
+        
+        max-height: 250px;
+    }
+
+    .projects-header-fixed, .header-item{
+        font-size: small;
+    }
+
+    .projects-header-fixed .projects-columns .header-item:nth-child(3) {
+        padding-left: 25px;  
+        text-align: center;  
+        margin-left: -40px;
     }
     
-    /* Improve scrolling experience */
-    #projectsList {
-        -webkit-overflow-scrolling: touch;
-        padding: 5px;
+    body {
+        background: #a9d6e5;
+    }
+    
+    .profile-up::after, .chart-box::after, .xp-progression::after, .projects-section::after {
+        background: #2c7da0;
+    }
+    
+    .profile-up::before {
+        background: repeating-conic-gradient(
+            from var(--a),
+            #f72585 0%,
+            #f72585 5%,
+            transparent 5%,
+            transparent 40%,
+            #7209b7 50%,
+            transparent 50%,
+            transparent 90%,
+            #f72585 100%
+        );
+    }
+    
+    .chart-box::before {
+        background: repeating-conic-gradient(
+            from var(--a),
+            #7209b7 0%,
+            #7209b7 5%,
+            transparent 5%,
+            transparent 40%,
+            #f72585 50%,
+            transparent 50%,
+            transparent 90%,
+            #7209b7 100%
+        );
+    }
+    
+    .xp-progression::before, .projects-section::before {
+        background: repeating-conic-gradient(
+            from var(--a),
+            #3a0ca3 0%,
+            #3a0ca3 5%,
+            transparent 5%,
+            transparent 40%,
+            #f72585 50%,
+            transparent 50%,
+            transparent 90%,
+            #3a0ca3 100%
+        );
+    }
+    
+    .user-info-section h3, .chart-box h3, .xp-progression h3, .projects-section h3 {
+        color: #caf0f8;
+    }
+    
+    #skillsGraph polygon {
+        fill: rgba(76, 201, 240, 0.4);
+        stroke: #4cc9f0;
+    }
+    
+    .skill-point {
+        fill: #f72585;
+        stroke: #4cc9f0;
+    }
+    
+    .up-circle {
+        stroke: #4cc9f0;
+    }
+    
+    .down-circle {
+        stroke: #f72585;
+    }
+    
+    .ratio-text {
+        fill: #caf0f8;
+    }
+    
+    .project-name {
+        color: #caf0f8;
+    }
+    
+    .project-xp {
+        color: #f72585;
     }
 }
