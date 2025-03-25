@@ -331,7 +331,6 @@ color: rgba(255,255,255,0.5);
 
 
 .charts-container {
-    
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -748,11 +747,9 @@ svg text.skill-label {
         gap: 20px;
     }
     
+    
 
-
-    .chart-box, .xp-progression, .projects-section {
-        width: 100%;
-    }
+    
     .profile-image-container {
         width: 120px;
         height: 120px;
@@ -761,28 +758,6 @@ svg text.skill-label {
         min-height: 120px;
     }
 
-    #skillsGraph {
-        width: min(100%, 380px);
-        height: min(100%, 380px);
-        
-    }
-
-
-
-    #skillsGraph svg, .xp-progression svg {
-        transform-origin: center;
-        transform: scale(0.8);
-        margin-left: 10px;
-    }
-
-    .xp-progression svg {
-        transform-origin: center;
-        transform: scale(0.6);
-        transform: translateX(5px);
-        margin-top: -30px;
-        
-    }
-    
 }
 
 @media screen and (max-width: 768px) {
@@ -799,16 +774,6 @@ svg text.skill-label {
         height: 120px;
     }
 
-    .xp-progression svg {
-        transform-origin: center;
-        transform: scale(0.8);
-        margin-left: -30px;
-    }
-    #skillsGraph {
-        width: min(100%, 300px);
-        height: min(100%, 300px);
-        
-    }
 }
 
 @media screen and (max-width: 480px) {
@@ -827,14 +792,13 @@ svg text.skill-label {
 
     .profile-logout {
         padding: 8px 16px; 
-        right: 70px;
+        right: 40px;
         top: 130px;
     }
 
     #skillsGraph {
         margin-left: -45px;
-        scale: 0.9;
-        
+    
     }
     #auditRatio svg {
         margin-left: -55px;
@@ -843,17 +807,129 @@ svg text.skill-label {
     .projects-header-fixed, .header-item{
         font-size: small;
     }
-    .xp-progression svg {
-        transform-origin: center;
-        transform: scale(0.5);
-        margin-left: -220px;
-        
+    
+    #auditRatio, #skillsGraph {
+        transform: scale(0.8);
     }
-
     .projects-header-fixed .projects-columns .header-item:nth-child(3) {
         padding-left: 25px;  
         text-align: center;  
         margin-left: -40px;
     }
     
+    /* Add this at the bottom of your CSS file */
+@media screen and (max-width: 480px) {
+    /* Adjust colors for mobile devices */
+    
+    /* Adjust the main background color */
+    body {
+        background: #1e1e24; /* Slightly darker background for mobile */
+    }
+    
+    /* Adjust the container background */
+    .profile-up::after, .chart-box::after, .xp-progression::after, .projects-section::after {
+        background: #252530; /* Slightly adjusted container background */
+    }
+    
+    /* Adjust gradient colors */
+    .profile-up::before {
+        background: repeating-conic-gradient(
+            from var(--a),
+            #ff3980 0%, /* Brighter pink */
+            #ff3980 5%,
+            transparent 5%,
+            transparent 40%,
+            #45f3ff 50%,
+            transparent 50%,
+            transparent 90%,
+            #ff3980 100%
+        );
+    }
+    
+    .chart-box::before {
+        background: repeating-conic-gradient(
+            from var(--a),
+            #a55aee 0%,    /* Brighter purple */
+            #a55aee 5%,
+            transparent 5%,
+            transparent 40%,
+            #00ffab 50%,   /* Brighter mint */
+            transparent 50%,
+            transparent 90%,
+            #a55aee 100%
+        );
+    }
+    
+    .xp-progression::before, .projects-section::before {
+        background: repeating-conic-gradient(
+            from var(--a),
+            #ff7c3f 0%,    /* Brighter orange */
+            #ff7c3f 5%,
+            transparent 5%,
+            transparent 40%,
+            #2bfff5 50%,   /* Same turquoise */
+            transparent 50%,
+            transparent 90%,
+            #ff7c3f 100%
+        );
+    }
+    
+    /* Adjust text colors */
+    .user-info-section h3, .chart-box h3, .xp-progression h3, .projects-section h3 {
+        color: #5affff; /* Brighter cyan for headings */
+    }
+    
+    /* Adjust skill graph colors */
+    #skillsGraph polygon {
+        fill: rgba(69, 243, 255, 0.4); /* More opacity */
+        stroke: #5affff; /* Brighter stroke */
+    }
+    
+    .skill-point {
+        fill: #ff3980; /* Brighter pink */
+        stroke: #5affff; /* Brighter cyan */
+    }
+    
+    /* Adjust audit ratio colors */
+    .up-circle {
+        stroke: #5affff; /* Brighter cyan */
+    }
+    
+    .down-circle {
+        stroke: #ff5a5a; /* Brighter red */
+    }
+    
+    .ratio-text {
+        fill: #ff3980; /* Brighter pink */
+    }
+    
+    /* Adjust project list colors */
+    .project-name {
+        color: #5affff; /* Brighter cyan */
+    }
+    
+    .project-xp {
+        color: #ff3980; /* Brighter pink */
+    }
+}
+
+}
+/* Add touch-friendly styles */
+@media (hover: none) and (pointer: coarse) {
+    /* Increase spacing for touch targets */
+    .project-item, .user-info-content p, button {
+        padding: 15px;
+        margin: 8px 0;
+    }
+    
+    /* Add active state for touch feedback */
+    .project-item:active {
+        background: rgba(255, 255, 255, 0.15);
+    }
+    
+    /* Improve scrolling experience */
+    #projectsList {
+        -webkit-overflow-scrolling: touch;
+        padding: 5px;
+    }
 }
