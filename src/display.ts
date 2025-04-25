@@ -254,7 +254,6 @@ function displayXPProgressionChart(projects: Array<{
     const isMobile = window.innerWidth <= 768;
     
     // Set minimum dimensions - increase height for mobile
-    const minWidth = isMobile ? 300 : 600;
     const minHeight = isMobile ? 400 : 300;
     
     // Set a reasonable height that's proportional but not too small
