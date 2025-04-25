@@ -776,128 +776,7 @@ svg text.skill-label {
 
 }
 
-@media screen and (max-width: 480px) {
-    .user-info-content {
-        grid-template-columns: 1fr;
-    }
 
-    .project-item {
-        font-size: 14px;
-    }
-    .user-info-section h3 {
-        text-align: left;
-        font-size: large;
-    }
-
-    .profile-logout {
-        padding: 8px 16px; 
-        right: 70px;
-        top: 130px;
-    }
-
-    #skillsGraph {
-        margin-left: -45px;
-        scale: 0.9;
-    }
-    
-    #auditRatio svg {
-        margin-left: -55px;
-    }
-
-    .projects-header-fixed, .header-item{
-        font-size: small;
-    }
-
-    .projects-header-fixed .projects-columns .header-item:nth-child(3) {
-        padding-left: 25px;  
-        text-align: center;  
-        margin-left: -40px;
-    }
-    
-    body {
-        background: #2a2a32;
-    }
-    
-    .profile-up::after, .chart-box::after, .xp-progression::after, .projects-section::after {
-        background: #32323e;
-    }
-    
-    .profile-up::before {
-        background: repeating-conic-gradient(
-            from var(--a),
-            #ff3980 0%,
-            #ff3980 5%,
-            transparent 5%,
-            transparent 40%,
-            #45f3ff 50%,
-            transparent 50%,
-            transparent 90%,
-            #ff3980 100%
-        );
-    }
-    
-    .chart-box::before {
-        background: repeating-conic-gradient(
-            from var(--a),
-            #a55aee 0%,
-            #a55aee 5%,
-            transparent 5%,
-            transparent 40%,
-            #00ffab 50%,
-            transparent 50%,
-            transparent 90%,
-            #a55aee 100%
-        );
-    }
-    
-    .xp-progression::before, .projects-section::before {
-        background: repeating-conic-gradient(
-            from var(--a),
-            #ff7c3f 0%,
-            #ff7c3f 5%,
-            transparent 5%,
-            transparent 40%,
-            #2bfff5 50%,
-            transparent 50%,
-            transparent 90%,
-            #ff7c3f 100%
-        );
-    }
-    
-    .user-info-section h3, .chart-box h3, .xp-progression h3, .projects-section h3 {
-        color: #5affff;
-    }
-    
-    #skillsGraph polygon {
-        fill: rgba(69, 243, 255, 0.4);
-        stroke: #5affff;
-    }
-    
-    .skill-point {
-        fill: #ff3980;
-        stroke: #5affff;
-    }
-    
-    .up-circle {
-        stroke: #5affff;
-    }
-    
-    .down-circle {
-        stroke: #ff5a5a;
-    }
-    
-    .ratio-text {
-        fill: #ff3980;
-    }
-    
-    .project-name {
-        color: #5affff;
-    }
-    
-    .project-xp {
-        color: #ff3980;
-    }
-}
 
 @media screen and (max-width: 480px) {
     .user-info-content {
@@ -907,17 +786,34 @@ svg text.skill-label {
     .project-item {
         font-size: 14px;
     }
-    .charts-container{
-        overflow: hidden;
+    
+    .xp-progression svg {
+        transform: scale(1.05);
+        margin-left: 0;
+        width: 100%;
+
+        max-height: 250px;
+        margin-top: 35px !important; /* Increase top margin to move chart down */
     }
+    #auditRatio svg {
+        margin-left: -55px;
+    }
+    
     .user-info-section h3 {
         text-align: left;
         font-size: large;
     }
+    #projectsList {
+        overflow-y: auto;
+        max-height: 280px; 
+        margin-bottom: 2px;
+        padding-bottom: 2px; 
+    }
 
+    
     .profile-logout {
         padding: 8px 16px; 
-        right: 70px;
+        right: 40px;
         top: 130px;
     }
 
@@ -927,7 +823,9 @@ svg text.skill-label {
     }
     
     #auditRatio svg {
-        margin-left: -55px;
+        transform: scale(0.9); /* Make it smaller */
+        
+        margin-top: -50px; /* Adjust vertical position */
     }
     .xp-progression {
         height: auto;
@@ -963,6 +861,7 @@ svg text.skill-label {
         background: #2c7da0;
     }
     
+
     .profile-up::before {
         background: repeating-conic-gradient(
             from var(--a),
