@@ -472,7 +472,7 @@ color: rgba(255,255,255,0.5);
 .xp-progression {
     position: relative;
     background: rgba(255,255,255,0.05);
-    z-index: -1 ;
+    z-index: 1000 ;
     border-radius: 19px;
     overflow: hidden;
     padding: 20px;
@@ -906,6 +906,9 @@ svg text.skill-label {
 
     .project-item {
         font-size: 14px;
+    }
+    .charts-container{
+        overflow: hidden;
     }
     .user-info-section h3 {
         text-align: left;

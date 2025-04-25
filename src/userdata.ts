@@ -21,6 +21,15 @@ export interface UserData {
         amount: number;
         createdAt: string;
     }>;
+    allXp: Array<{
+        id: string;
+        object: {
+            name: string;
+            type: string;
+        };
+        amount: number;
+        createdAt: string;
+    }>;
     skills: Array<{
         amount: number;
         type: string;
@@ -42,6 +51,15 @@ export interface GraphQLResponse {
             id: string;
             object: {
                 name: string;
+            };
+            amount: number;
+            createdAt: string;
+        }>;
+        allXp: Array<{
+            id: string;
+            object: {
+                name: string;
+                type: string;
             };
             amount: number;
             createdAt: string;
@@ -123,6 +141,21 @@ async function fetchUserData(): Promise<UserData> {
                         amount
                         createdAt
                     }
+                    allXp: transaction(
+                        where: {
+                            event: { path: { _eq: "/bahrain/bh-module" } },
+                            type: { _eq: "xp" }
+                        },
+                        order_by: { createdAt: asc }
+                    ) {
+                        id
+                        object {
+                            name
+                            type
+                        }
+                        amount
+                        createdAt
+                    }
                     skills: transaction(
                         where: {
                             _and: [
@@ -153,6 +186,7 @@ async function fetchUserData(): Promise<UserData> {
         xpSum: data.data.transaction_aggregate.aggregate.sum.amount,
         level: data.data.level[0]?.amount || 0,
         projects: data.data.projects,
+        allXp: data.data.allXp,
         skills: data.data.skills
     };
 }

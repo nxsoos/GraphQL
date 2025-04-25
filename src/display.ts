@@ -66,7 +66,7 @@ function displayUserInfo(userData: UserData): void {
     </div>
 `;
     profileContainer.appendChild(profileRight);
-    displayXPProgressionChart(projects);
+    displayXPProgressionChart(projects, userData.allXp, userData.xpSum);
     displaySubmittedProjects(projects);
 
     const profileLeft = document.createElement('div');
@@ -238,183 +238,364 @@ function displayXPProgressionChart(projects: Array<{
     object: { name: string };
     amount: number;
     createdAt: string;
-}>): void {
+
+}>, allXp?: Array<{
+    object: { name: string; type: string };
+    amount: number;
+    createdAt: string;
+}>, totalXp?: number): void {
     const container = document.querySelector('.profile-right .xp-progression');
     if (!container) return;
     
-    // Set minimum dimensions to ensure the chart doesn't get too small
-    const minWidth = 600;
-    const minHeight = 300;
+    // Get the container width
+    const containerWidth = container.clientWidth || 800;
     
-    // Get the container width but ensure it's not smaller than our minimum
-    const containerWidth = Math.max(container.clientWidth || 800, minWidth);
+    // Adjust dimensions based on screen size
+    const isMobile = window.innerWidth <= 768;
+    
+    // Set minimum dimensions - increase height for mobile
+    const minWidth = isMobile ? 300 : 600;
+    const minHeight = isMobile ? 400 : 300;
+    
     // Set a reasonable height that's proportional but not too small
-    const containerHeight = Math.max(Math.min(containerWidth * 0.5, 340), minHeight);
+    // For mobile, make it taller relative to width
+    const containerHeight = isMobile 
+        ? Math.max(containerWidth * 0.8, minHeight)
+        : Math.max(Math.min(containerWidth * 0.5, 340), minHeight);
     
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("width", "100%"); // Use percentage for width
-    svg.setAttribute("height", containerHeight.toString());
-    svg.setAttribute("viewBox", `0 0 800 340`); // Keep viewBox consistent
-    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-    
-    // Add a class for additional styling if needed
-    svg.classList.add('xp-chart');
-
-    const padding = 50;  
-    const width = 800 - (padding * 2);
-    const height = 260;  
-
-    let cumulativeXP = 0;
-    const dataPoints = projects.map(project => {
-        cumulativeXP += project.amount;
-        return {
-            date: new Date(project.createdAt),
-            xp: cumulativeXP,
-            name: project.object.name
-        };
-    });
-
-    const xScale = width / (dataPoints.length - 1);
-    const yScale = height / cumulativeXP;
-    
-    // Y-axis markers with adjusted positioning
-    const yMarkers = 5;
-    for (let i = 0; i <= yMarkers; i++) {
-        const y = padding + height - ((cumulativeXP * i / yMarkers) * yScale);
-        const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        gridLine.setAttribute("x1", padding.toString());
-        gridLine.setAttribute("x2", (800 - padding).toString());
-        gridLine.setAttribute("y1", y.toString());
-        gridLine.setAttribute("y2", y.toString());
-        gridLine.setAttribute("stroke", "rgba(69, 243, 255, 0.1)");
-        gridLine.setAttribute("stroke-width", "1");
-        svg.appendChild(gridLine);
-
-        // Convert XP to KB and display
-        const kbValue = ((cumulativeXP * i / yMarkers) / 1000).toFixed(1);
-    
-        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        text.textContent = `${kbValue}KB`;
-        text.setAttribute("x", (padding - 10).toString());
-        text.setAttribute("y", y.toString());
-        text.setAttribute("fill", "#fff");
-        text.setAttribute("text-anchor", "end");
-        text.setAttribute("font-size", "10px");
-        text.setAttribute("alignment-baseline", "middle");
-        svg.appendChild(text);
-    }
-
-    // Add vertical grid lines
-    const xMarkers = dataPoints.length - 1;
-    for (let i = 0; i <= xMarkers; i++) {
-        const x = padding + (i * xScale);
-        const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        gridLine.setAttribute("x1", x.toString());
-        gridLine.setAttribute("x2", x.toString());
-        gridLine.setAttribute("y1", padding.toString());
-        gridLine.setAttribute("y2", (padding + height).toString());
-        gridLine.setAttribute("stroke", "rgba(69, 243, 255, 0.1)");
-        gridLine.setAttribute("stroke-width", "1");
-        svg.appendChild(gridLine);
-    }
-    
-    // Data points with adjusted positioning
-    dataPoints.forEach((point, index) => {
-        const x = padding + (index * xScale);
-        const y = padding + height - (point.xp * yScale);
-
-        // Data point circle
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("cx", x.toString());
-        circle.setAttribute("cy", y.toString());
-        circle.setAttribute("r", "4");
-        circle.setAttribute("fill", "#45f3ff");
-
-        // Date label (every 3rd point to avoid crowding)
-        // Adjust the frequency of labels based on data point count
-        const labelFrequency = dataPoints.length > 15 ? 4 : 3;
-        if (index % labelFrequency === 0) {
-            const dateText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            dateText.textContent = point.date.toLocaleDateString();
-            dateText.setAttribute("x", x.toString());
-            dateText.setAttribute("y", (padding + height + 20).toString());
-            dateText.setAttribute("fill", "#fff");
-            dateText.setAttribute("text-anchor", "middle");
-            dateText.setAttribute("font-size", "12px");
-            
-            svg.appendChild(dateText);
-        }
-
-        // Tooltip with project name and XP
-        const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-        title.textContent = `${point.name}\nXP: ${point.xp}\nDate: ${point.date.toLocaleDateString()}`;
-        circle.appendChild(title);
-
-        svg.appendChild(circle);
-    });
-
-    // Draw connecting line
-    const pathData = dataPoints.map((point, index) => {
-        const x = padding + (index * xScale);
-        const y = padding + height - (point.xp * yScale);
-        return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-    }).join(' ');
-
-    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", pathData);
-    path.setAttribute("fill", "none");
-    path.setAttribute("stroke", "#45f3ff");
-    path.setAttribute("stroke-width", "2");
-    svg.appendChild(path);
-
-    // Axes with adjusted positioning
-    const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    xAxis.setAttribute("x1", padding.toString());
-    xAxis.setAttribute("y1", (padding + height).toString());
-    xAxis.setAttribute("x2", (800 - padding).toString());
-    xAxis.setAttribute("y2", (padding + height).toString());
-    xAxis.setAttribute("stroke", "#45f3ff");
-    xAxis.setAttribute("stroke-width", "2");
-    svg.appendChild(xAxis);
-
-    const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    yAxis.setAttribute("x1", padding.toString() );
-    yAxis.setAttribute("y1", (padding - 20).toString());
-    yAxis.setAttribute("x2", padding.toString());
-    yAxis.setAttribute("y2", (padding + height).toString());
-    yAxis.setAttribute("stroke", "#45f3ff");
-    yAxis.setAttribute("stroke-width", "2");
-    svg.appendChild(yAxis);
-
-    // Clear any existing content and append the new SVG
-    while (container.firstChild) {
-        if (container.firstChild.nodeName !== 'H3') {
-            container.removeChild(container.firstChild);
-        } else {
-            break;
-        }
-    }
-    
-    container.appendChild(svg);
-    
-    // Also update the container's CSS to ensure it has sufficient height
-    if (container instanceof HTMLElement) {
-        container.style.minHeight = `${containerHeight + 60}px`; // Add extra for the heading
-    }
-    
-    // Add resize event listener to update chart on window resize
-    window.addEventListener('resize', () => {
-        const updatedContainer = document.querySelector('.profile-right .xp-progression');
-        if (updatedContainer && updatedContainer.contains(svg)) {
-            const newWidth = Math.max(updatedContainer.clientWidth || 800, minWidth);
-            const newHeight = Math.max(Math.min(newWidth * 0.5, 340), minHeight);
-            svg.setAttribute("height", newHeight.toString());
-            
-            if (updatedContainer instanceof HTMLElement) {
-                updatedContainer.style.minHeight = `${newHeight + 60}px`;
+    // Function to create and render the chart
+    const renderChart = () => {
+        // Clear any existing content except the heading
+        while (container.firstChild) {
+            if (container.firstChild.nodeName !== 'H3') {
+                container.removeChild(container.firstChild);
+            } else {
+                break;
             }
         }
-    });
+        
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("width", "100%");
+        svg.setAttribute("height", containerHeight.toString());
+        
+        // Use different viewBox for mobile to make elements larger
+        if (isMobile) {
+            svg.setAttribute("viewBox", `0 0 400 ${containerHeight}`);
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        } else {
+            svg.setAttribute("viewBox", `0 0 800 340`);
+            svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        }
+        
+        svg.classList.add('xp-chart');
+
+        // Adjust padding for mobile
+        const padding = isMobile ? 40 : 50;
+        const width = (isMobile ? 400 : 800) - (padding * 2);
+        const height = isMobile ? containerHeight - 80 : 260;
+
+
+        // Process all XP data points
+        let cumulativeXP = 0;
+
+
+
+
+
+
+
+
+
+        let allDataPoints: {date: Date, xp: number, amount: number, name: string, isProject: boolean}[] = [];
+        
+        if (allXp && allXp.length > 0) {
+            // Sort all XP transactions by date
+            const sortedXp = [...allXp].sort((a, b) => 
+                new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            );
+            
+            // Create data points for all XP
+            allDataPoints = sortedXp.map(xp => {
+                const amount = xp.amount;
+                cumulativeXP += amount;
+                return {
+                    date: new Date(xp.createdAt),
+                    xp: cumulativeXP,
+                    amount: amount,
+                    name: xp.object.name || "XP Transaction",
+                    isProject: xp.object.type === "project"
+                };
+            });
+        } else {
+            // Fallback to just using projects if allXp is not available
+            allDataPoints = projects.map(project => {
+                const amount = project.amount;
+                cumulativeXP += amount;
+                return {
+                    date: new Date(project.createdAt),
+                    xp: cumulativeXP,
+                    amount: amount,
+                    name: project.object.name,
+                    isProject: true
+                };
+            });
+        }
+
+
+
+        // Use the provided totalXp if available, otherwise use the calculated one
+        const finalTotalXp = totalXp || cumulativeXP;
+        
+        // Convert total XP to KB for display
+
+        const totalXpInKB = (finalTotalXp / 1000).toFixed(1);
+        
+        // Add total XP earned above the chart
+        const totalXpText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        totalXpText.textContent = `Total XP Earned: ${totalXpInKB} KB`;
+        totalXpText.setAttribute("x", isMobile ? "180" : "380"); // Center of the chart
+        totalXpText.setAttribute("y", "5");  // Position at the top
+        totalXpText.setAttribute("fill", "#ff2770");
+        totalXpText.setAttribute("text-anchor", "middle");
+        totalXpText.setAttribute("font-size", isMobile ? "14px" : "16px");
+        totalXpText.setAttribute("font-weight", "bold");
+        svg.appendChild(totalXpText);
+
+        const xScale = width / (allDataPoints.length - 1 || 1);
+        const yScale = height / (finalTotalXp || 1);
+        
+        // Y-axis markers with adjusted positioning
+        const yMarkers = isMobile ? 4 : 5; // Fewer markers on mobile
+        for (let i = 0; i <= yMarkers; i++) {
+
+            const y = padding + height - ((finalTotalXp * i / yMarkers) * yScale);
+            const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            gridLine.setAttribute("x1", padding.toString());
+            gridLine.setAttribute("x2", ((isMobile ? 400 : 800) - padding).toString());
+            gridLine.setAttribute("y1", y.toString());
+            gridLine.setAttribute("y2", y.toString());
+            gridLine.setAttribute("stroke", "rgba(69, 243, 255, 0.1)");
+            gridLine.setAttribute("stroke-width", "1");
+            svg.appendChild(gridLine);
+
+            // Convert XP to KB for y-axis labels
+
+            const kbValue = ((finalTotalXp * i / yMarkers) / 1000).toFixed(1);
+        
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.textContent = `${kbValue} KB`;
+            text.setAttribute("x", (padding - 10).toString());
+            text.setAttribute("y", y.toString());
+            text.setAttribute("fill", "#fff");
+            text.setAttribute("text-anchor", "end");
+            text.setAttribute("font-size", isMobile ? "9px" : "10px");
+            text.setAttribute("alignment-baseline", "middle");
+            svg.appendChild(text);
+        }
+
+        // Add vertical grid lines - limit to fewer dates on mobile
+        const numDates = isMobile ? 4 : 6;
+        for (let i = 0; i < numDates; i++) {
+            // Calculate index in the data array for evenly spaced dates
+
+            const dataIndex = i === 0 ? 0 : Math.floor((allDataPoints.length - 1) * (i / (numDates - 1)));
+            const x = padding + (dataIndex * xScale);
+            
+            const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            gridLine.setAttribute("x1", x.toString());
+            gridLine.setAttribute("x2", x.toString());
+            gridLine.setAttribute("y1", padding.toString());
+            gridLine.setAttribute("y2", (padding + height).toString());
+            gridLine.setAttribute("stroke", "rgba(69, 243, 255, 0.1)");
+            gridLine.setAttribute("stroke-width", "1");
+            svg.appendChild(gridLine);
+            
+            // Add date label
+
+            if (allDataPoints[dataIndex]) {
+                const dateText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                // Format date to be shorter on mobile
+                const dateStr = isMobile 
+
+
+                    ? allDataPoints[dataIndex].date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+                    : allDataPoints[dataIndex].date.toLocaleDateString();
+                    
+                dateText.textContent = dateStr;
+                dateText.setAttribute("x", x.toString());
+                dateText.setAttribute("y", (padding + height + 20).toString());
+                dateText.setAttribute("fill", "#fff");
+                dateText.setAttribute("text-anchor", "middle");
+                dateText.setAttribute("font-size", isMobile ? "10px" : "12px");
+                
+                // Rotate date labels on mobile for better fit
+                if (isMobile) {
+                    dateText.setAttribute("transform", `rotate(45, ${x}, ${padding + height + 20})`);
+                    dateText.setAttribute("text-anchor", "start");
+                }
+                
+                svg.appendChild(dateText);
+            }
+        }
+        
+        // Draw connecting line first (so it's behind the points)
+
+        const pathData = allDataPoints.map((point, index) => {
+            const x = padding + (index * xScale);
+            const y = padding + height - (point.xp * yScale);
+            return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+        }).join(' ');
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "#45f3ff");
+        path.setAttribute("stroke-width", isMobile ? "1.5" : "2");
+        svg.appendChild(path);
+        
+
+
+        // Data points with adjusted positioning
+        // On mobile, show fewer points to avoid overcrowding
+        const pointFrequency = isMobile ? Math.ceil(allDataPoints.length / 30) : 1;
+        
+        allDataPoints.forEach((point, index) => {
+            // Skip some points on mobile to avoid overcrowding
+            if (isMobile && index % pointFrequency !== 0 && !point.isProject) return;
+            
+            const x = padding + (index * xScale);
+            const y = padding + height - (point.xp * yScale);
+
+            // Data point circle
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", x.toString());
+            circle.setAttribute("cy", y.toString());
+
+
+
+
+            circle.setAttribute("r", point.isProject ? (isMobile ? "4" : "5") : (isMobile ? "2" : "3"));
+            
+            // Make project points red, other XP points blue
+            circle.setAttribute("fill", point.isProject ? "#ff2770" : "#45f3ff");
+            
+            // Add a stroke to project points to make them stand out
+            if (point.isProject) {
+                circle.setAttribute("stroke", "#ffffff");
+                circle.setAttribute("stroke-width", "1");
+            }
+
+            // Tooltip with XP values in KB
+            const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+            title.textContent = `${point.name}\nXP Earned: ${(point.amount / 1000).toFixed(1)} KB\nTotal XP: ${(point.xp / 1000).toFixed(1)} KB\nDate: ${point.date.toLocaleDateString()}`;
+            circle.appendChild(title);
+
+            svg.appendChild(circle);
+        });
+
+        // Axes with adjusted positioning
+        const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        xAxis.setAttribute("x1", padding.toString());
+        xAxis.setAttribute("y1", (padding + height).toString());
+        xAxis.setAttribute("x2", ((isMobile ? 400 : 800) - padding).toString());
+        xAxis.setAttribute("y2", (padding + height).toString());
+        xAxis.setAttribute("stroke", "#45f3ff");
+        xAxis.setAttribute("stroke-width", "2");
+        svg.appendChild(xAxis);
+
+        const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        yAxis.setAttribute("x1", padding.toString() );
+        yAxis.setAttribute("y1", (padding - 20).toString());
+        yAxis.setAttribute("x2", padding.toString());
+        yAxis.setAttribute("y2", (padding + height).toString());
+        yAxis.setAttribute("stroke", "#45f3ff");
+        yAxis.setAttribute("stroke-width", "2");
+        svg.appendChild(yAxis);
+
+        // Add legend - position differently on mobile
+        const legendY = isMobile ? padding - 15 : padding - 10;
+        const legendX1 = isMobile ? padding + 5 : padding + 10;
+        const legendX2 = isMobile ? padding + 80 : padding + 100;
+        
+        // Project point legend
+        const projectCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        projectCircle.setAttribute("cx", legendX1.toString());
+        projectCircle.setAttribute("cy", legendY.toString());
+        projectCircle.setAttribute("r", isMobile ? "4" : "5");
+        projectCircle.setAttribute("fill", "#ff2770");
+        projectCircle.setAttribute("stroke", "#ffffff");
+        projectCircle.setAttribute("stroke-width", "1");
+        svg.appendChild(projectCircle);
+        
+        const projectText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        projectText.textContent = "Projects";
+        projectText.setAttribute("x", (legendX1 + 10).toString());
+        projectText.setAttribute("y", legendY.toString());
+        projectText.setAttribute("fill", "#fff");
+        projectText.setAttribute("font-size", isMobile ? "10px" : "12px");
+        projectText.setAttribute("alignment-baseline", "middle");
+        svg.appendChild(projectText);
+        
+        // Other XP legend
+        const xpCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        xpCircle.setAttribute("cx", legendX2.toString());
+        xpCircle.setAttribute("cy", legendY.toString());
+        xpCircle.setAttribute("r", isMobile ? "2" : "3");
+        xpCircle.setAttribute("fill", "#45f3ff");
+        svg.appendChild(xpCircle);
+        
+        const xpText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        xpText.textContent = "Other XP";
+        xpText.setAttribute("x", (legendX2 + 10).toString());
+        xpText.setAttribute("y", legendY.toString());
+        xpText.setAttribute("fill", "#fff");
+        xpText.setAttribute("font-size", isMobile ? "10px" : "12px");
+        xpText.setAttribute("alignment-baseline", "middle");
+        svg.appendChild(xpText);
+
+        container.appendChild(svg);
+        
+        // Update container height
+        if (container instanceof HTMLElement) {
+            container.style.minHeight = `${containerHeight + 60}px`; // Add extra for the heading
+        }
+    };
+    
+    // Initial render
+    renderChart();
+    
+    // Add resize event listener to update chart on window resize
+    const resizeHandler = () => {
+        const updatedContainer = document.querySelector('.profile-right .xp-progression');
+        if (updatedContainer) {
+            // Remove existing chart and redraw
+            const currentIsMobile = window.innerWidth <= 768;
+            // Only redraw if mobile state changed (to avoid unnecessary redraws)
+            if (currentIsMobile !== isMobile) {
+                // Remove the old SVG
+                const oldSvg = updatedContainer.querySelector('svg');
+                if (oldSvg) {
+                    updatedContainer.removeChild(oldSvg);
+                }
+                // Call the function again to redraw with new dimensions
+                displayXPProgressionChart(projects, allXp, totalXp);
+            }
+        } else {
+            // If container no longer exists, remove the event listener
+            window.removeEventListener('resize', resizeHandler);
+        }
+    };
+    
+    // Use a debounced version of the resize handler to avoid performance issues
+    let resizeTimeout: number | null = null;
+    const debouncedResizeHandler = () => {
+        if (resizeTimeout) {
+            window.clearTimeout(resizeTimeout);
+        }
+        resizeTimeout = window.setTimeout(resizeHandler, 250);
+    };
+    
+    window.addEventListener('resize', debouncedResizeHandler);
 }
 
 
